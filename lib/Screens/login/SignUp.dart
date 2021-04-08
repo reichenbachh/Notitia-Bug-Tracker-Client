@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import '../../Providers/AuthProvider.dart';
 import '../../utils.dart';
 
 class SignUp extends StatefulWidget {
@@ -18,13 +19,44 @@ class _SignUpState extends State<SignUp> {
       GlobalKey<FormFieldState>();
   final GlobalKey<FormFieldState> _passwordFormKey =
       GlobalKey<FormFieldState>();
+
+  //form state form vars
   bool _canSubmitForm = false;
-  bool _textIsHidden = false;
+  bool _textIsHidden = true;
+
+  bool _isEmailFieldValid = false;
+  bool _isuserNameFieldValid = false;
   //validate form in realtime
   bool _isFormValid() {
     return ((_emailFormKey.currentState.isValid &&
         _usernameFormKey.currentState.isValid &&
         _passwordFormKey.currentState.isValid));
+  }
+
+  void _isEmailValid(GlobalKey<FormFieldState<dynamic>> formKey) {
+    if (formKey.currentState.isValid) {
+      setState(() {
+        _isEmailFieldValid = true;
+      });
+    }
+    if (!formKey.currentState.isValid) {
+      setState(() {
+        _isEmailFieldValid = false;
+      });
+    }
+  }
+
+  void _isUserNameValid(GlobalKey<FormFieldState<dynamic>> formKey) {
+    if (formKey.currentState.isValid) {
+      setState(() {
+        _isuserNameFieldValid = true;
+      });
+    }
+    if (!formKey.currentState.isValid) {
+      setState(() {
+        _isuserNameFieldValid = false;
+      });
+    }
   }
 
   //change hidden state of password field
@@ -45,6 +77,8 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(_isEmailFieldValid.toString());
+    final loginFunc = Provider.of<AuthProvider>(context);
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -74,17 +108,14 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                   TextFormField(
+                    controller: _emailTextController,
                     key: _emailFormKey,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      suffix: _emailFormKey.currentState == null ||
-                              !_emailFormKey.currentState.isValid
-                          ? SizedBox(
-                              height: 40,
-                              child: Image.asset(
-                                "assets/gif/load.gif",
-                                fit: BoxFit.contain,
-                              ),
+                      suffix: _isEmailFieldValid == false
+                          ? Icon(
+                              Icons.error,
+                              color: Colors.red,
                             )
                           : Icon(Icons.check),
                       prefixIcon: Icon(
@@ -93,14 +124,15 @@ class _SignUpState extends State<SignUp> {
                       ),
                     ),
                     onChanged: (value) {
+                      _isEmailValid(_emailFormKey);
                       setState(() {
                         _emailFormKey.currentState.validate();
+                        _canSubmitForm = _isFormValid();
                       });
-                      _canSubmitForm = _isFormValid();
                     },
                     validator: (value) {
-                      if (value.isEmpty) {
-                        return "Please enter your email";
+                      if (value.length < 2) {
+                        return "please enter a username";
                       }
                       final emailRegex = new RegExp(
                         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
@@ -125,21 +157,30 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                   TextFormField(
+                    controller: _usernameTextController,
                     key: _usernameFormKey,
                     keyboardType: TextInputType.text,
                     decoration: InputDecoration(
-                        prefixIcon: Icon(
-                      Icons.person_outline,
-                      color: convertToHex("#06512C"),
-                    )),
+                      suffix: _isuserNameFieldValid == false
+                          ? Icon(
+                              Icons.error,
+                              color: Colors.red,
+                            )
+                          : Icon(Icons.check),
+                      prefixIcon: Icon(
+                        Icons.person_outline,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
                     onChanged: (value) {
+                      _isUserNameValid(_usernameFormKey);
                       setState(() {
                         _usernameFormKey.currentState.validate();
+                        _canSubmitForm = _isFormValid();
                       });
-                      _canSubmitForm = _isFormValid();
                     },
                     validator: (value) {
-                      if (value.isEmpty) {
+                      if (value.length < 2) {
                         return "please enter a username";
                       }
 
@@ -163,6 +204,7 @@ class _SignUpState extends State<SignUp> {
                     ),
                   ),
                   TextFormField(
+                    controller: _passwordTextController,
                     key: _passwordFormKey,
                     obscureText: _textIsHidden,
                     keyboardType: TextInputType.emailAddress,
@@ -180,9 +222,15 @@ class _SignUpState extends State<SignUp> {
                         color: Theme.of(context).primaryColor,
                       ),
                     ),
+                    onChanged: (value) {
+                      setState(() {
+                        _passwordFormKey.currentState.validate();
+                        _canSubmitForm = _isFormValid();
+                      });
+                    },
                     validator: (value) {
-                      if (value.isEmpty) {
-                        return "Password field cannot be blank";
+                      if (value.length < 2) {
+                        return "please enter a password";
                       }
                       return null;
                     },
@@ -213,7 +261,21 @@ class _SignUpState extends State<SignUp> {
                     color: Theme.of(context).primaryColor,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30)),
-                    onPressed: () {},
+                    onPressed: _canSubmitForm
+                        ? () async {
+                            try {
+                              Map<String, String> loginMap = {
+                                "email": _emailTextController.text,
+                                "username": _usernameTextController.text,
+                                "password": _passwordTextController.text,
+                              };
+
+                              await loginFunc.loginRequest(loginMap);
+                            } catch (e) {
+                              debugPrint(e.toString());
+                            }
+                          }
+                        : null,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

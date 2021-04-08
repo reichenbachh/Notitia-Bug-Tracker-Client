@@ -15,6 +15,7 @@ class _SignInState extends State<SignIn> {
       GlobalKey<FormFieldState>();
   bool _canSubmitForm = false;
   bool _textIsHidden = false;
+
   //validate form in realtime
   bool _isFormValid() {
     return ((_emailFormKey.currentState.isValid &&
