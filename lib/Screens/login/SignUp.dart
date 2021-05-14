@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../Providers/AuthProvider.dart';
 import '../../utils.dart';
+import 'package:tasty_toast/tasty_toast.dart';
 
 class SignUp extends StatefulWidget {
   static const routeName = "/signup";
@@ -23,6 +26,7 @@ class _SignUpState extends State<SignUp> {
   //form state form vars
   bool _canSubmitForm = false;
   bool _textIsHidden = true;
+  bool _isLoading = false;
 
   bool _isEmailFieldValid = false;
   bool _isuserNameFieldValid = false;
@@ -66,6 +70,48 @@ class _SignUpState extends State<SignUp> {
     });
   }
 
+  void _submitRegister(Map<String, String> data, BuildContext context) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      await Provider.of<AuthProvider>(context, listen: false)
+          .registerUser(data);
+
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = true;
+      });
+      final dataMap = e.toString().split("::")[1];
+      final error = jsonDecode(dataMap) as Map<dynamic, dynamic>;
+
+      if (error.containsKey("errors")) {
+        setState(() {
+          _isLoading = false;
+        });
+        return showToast(context, error["errors"][0],
+            textStyle: TextStyle(color: Colors.white),
+            background: BoxDecoration(color: Colors.red),
+            alignment: Alignment.topCenter,
+            duration: Duration(seconds: 3));
+      }
+
+      showToast(context, error["msg"],
+          textStyle: TextStyle(color: Colors.white),
+          background: BoxDecoration(color: Colors.red),
+          alignment: Alignment.topCenter,
+          duration: Duration(seconds: 3));
+
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -77,8 +123,6 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(_isEmailFieldValid.toString());
-    final loginFunc = Provider.of<AuthProvider>(context);
     return SafeArea(
       child: Scaffold(
         body: SingleChildScrollView(
@@ -257,41 +301,39 @@ class _SignUpState extends State<SignUp> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
-                    onPressed: _canSubmitForm
-                        ? () async {
-                            try {
-                              Map<String, String> loginMap = {
-                                "email": _emailTextController.text,
-                                "username": _usernameTextController.text,
-                                "password": _passwordTextController.text,
-                              };
+                  child: _isLoading
+                      ? CircularProgressIndicator()
+                      : RaisedButton(
+                          color: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          onPressed: _canSubmitForm
+                              ? () {
+                                  Map<String, String> data = {
+                                    "email": _emailTextController.text,
+                                    "password": _passwordTextController.text,
+                                    "username": _usernameTextController.text
+                                  };
 
-                              await loginFunc.loginRequest(loginMap);
-                            } catch (e) {
-                              debugPrint(e.toString());
-                            }
-                          }
-                        : null,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Sign Up",
-                          style: TextStyle(
-                            color: Colors.white,
+                                  _submitRegister(data, context);
+                                }
+                              : null,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Sign Up",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Icon(
+                                Icons.login,
+                                color: Colors.white,
+                              )
+                            ],
                           ),
                         ),
-                        Icon(
-                          Icons.login,
-                          color: Colors.white,
-                        )
-                      ],
-                    ),
-                  ),
                 ),
                 SizedBox(
                   height: 20,

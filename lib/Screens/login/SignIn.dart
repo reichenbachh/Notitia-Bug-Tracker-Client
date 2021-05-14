@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:provider/provider.dart';
+import '../../Providers/AuthProvider.dart';
 import '../../utils.dart';
+import 'package:tasty_toast/tasty_toast.dart';
 
 class SignIn extends StatefulWidget {
   @override
@@ -14,7 +18,8 @@ class _SignInState extends State<SignIn> {
   final GlobalKey<FormFieldState> _passwordFormKey =
       GlobalKey<FormFieldState>();
   bool _canSubmitForm = false;
-  bool _textIsHidden = false;
+  bool _textIsHidden = true;
+  bool _isLoading = false;
 
   //validate form in realtime
   bool _isFormValid() {
@@ -27,6 +32,63 @@ class _SignInState extends State<SignIn> {
     setState(() {
       _textIsHidden = !_textIsHidden;
     });
+  }
+
+  bool _isEmailFieldValid = false;
+
+  void _isEmailValid(GlobalKey<FormFieldState<dynamic>> formKey) {
+    if (formKey.currentState.isValid) {
+      setState(() {
+        _isEmailFieldValid = true;
+      });
+    }
+    if (!formKey.currentState.isValid) {
+      setState(() {
+        _isEmailFieldValid = false;
+      });
+    }
+  }
+
+  void _submitLogin(Map<String, String> data, BuildContext context) async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      await Provider.of<AuthProvider>(context, listen: false).loginUser(data);
+      print(data);
+
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = true;
+      });
+      final dataMap = e.toString().split("::")[1];
+      final error = jsonDecode(dataMap) as Map<dynamic, dynamic>;
+
+      if (error.containsKey("errors")) {
+        setState(() {
+          _isLoading = false;
+        });
+        return showToast(context, error["errors"][0],
+            textStyle: TextStyle(color: Colors.white),
+            background: BoxDecoration(color: Colors.red),
+            alignment: Alignment.topCenter,
+            duration: Duration(seconds: 3));
+      }
+
+      showToast(context, error["msg"],
+          textStyle: TextStyle(color: Colors.white),
+          background: BoxDecoration(color: Colors.red),
+          alignment: Alignment.topCenter,
+          duration: Duration(seconds: 3));
+
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -67,17 +129,14 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
                 TextFormField(
+                  controller: _stringIDTextController,
                   key: _emailFormKey,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    suffix: _emailFormKey.currentState == null ||
-                            !_emailFormKey.currentState.isValid
-                        ? SizedBox(
-                            height: 40,
-                            child: Image.asset(
-                              "assets/gif/load.gif",
-                              fit: BoxFit.contain,
-                            ),
+                    suffix: _isEmailFieldValid == false
+                        ? Icon(
+                            Icons.error,
+                            color: Colors.red,
                           )
                         : Icon(Icons.check),
                     prefixIcon: Icon(
@@ -86,14 +145,15 @@ class _SignInState extends State<SignIn> {
                     ),
                   ),
                   onChanged: (value) {
+                    _isEmailValid(_emailFormKey);
                     setState(() {
                       _emailFormKey.currentState.validate();
+                      _canSubmitForm = _isFormValid();
                     });
-                    _canSubmitForm = _isFormValid();
                   },
                   validator: (value) {
-                    if (value.isEmpty) {
-                      return "Please enter your email";
+                    if (value.length < 2) {
+                      return "please enter a username";
                     }
                     final emailRegex = new RegExp(
                       r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
@@ -118,6 +178,7 @@ class _SignInState extends State<SignIn> {
                   ),
                 ),
                 TextFormField(
+                  controller: _passwordTextController,
                   key: _passwordFormKey,
                   obscureText: _textIsHidden,
                   keyboardType: TextInputType.emailAddress,
@@ -141,6 +202,12 @@ class _SignInState extends State<SignIn> {
                     }
                     return null;
                   },
+                  onChanged: (value) {
+                    setState(() {
+                      _passwordFormKey.currentState.validate();
+                      _canSubmitForm = _isFormValid();
+                    });
+                  },
                 ),
                 SizedBox(
                   height: 20,
@@ -163,27 +230,38 @@ class _SignInState extends State<SignIn> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: RaisedButton(
-                    color: Theme.of(context).primaryColor,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30)),
-                    onPressed: () {},
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Sign In",
-                          style: TextStyle(
-                            color: Colors.white,
+                  child: _isLoading
+                      ? CircularProgressIndicator()
+                      : RaisedButton(
+                          color: Theme.of(context).primaryColor,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          onPressed: _canSubmitForm
+                              ? () {
+                                  Map<String, String> data = {
+                                    "stringID": _stringIDTextController.text,
+                                    "password": _passwordTextController.text,
+                                  };
+
+                                  _submitLogin(data, context);
+                                }
+                              : null,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Sign In",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Icon(
+                                Icons.login,
+                                color: Colors.white,
+                              )
+                            ],
                           ),
                         ),
-                        Icon(
-                          Icons.login,
-                          color: Colors.white,
-                        )
-                      ],
-                    ),
-                  ),
                 ),
                 SizedBox(
                   height: 20,

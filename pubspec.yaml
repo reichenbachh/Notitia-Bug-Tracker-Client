@@ -26,7 +26,8 @@ dependencies:
   flutter_svg: ^0.21.0+1
   provider: ^5.0.0
   http: ^0.13.1
-
+  flutter_secure_storage: ^4.1.0
+  tasty_toast:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0

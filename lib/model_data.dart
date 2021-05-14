@@ -1,3 +1,18 @@
+class User {
+  String id;
+  String username;
+  String email;
+  String profileImageUrl;
+  bool isAuthenticated;
+
+  User(
+      {this.id,
+      this.email,
+      this.profileImageUrl,
+      this.isAuthenticated,
+      this.username});
+}
+
 class OnBoardingElement {
   final String messageBig;
   final String message;
