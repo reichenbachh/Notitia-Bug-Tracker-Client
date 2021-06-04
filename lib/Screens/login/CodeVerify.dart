@@ -14,7 +14,7 @@ class _CodeVerifyState extends State<CodeVerify> {
   bool _canSubmitForm = false;
 
   bool _isFormValid() {
-    return ((_codeFormKey.currentState.isValid));
+    return _codeFormKey.currentState!.isValid;
   }
 
   @override
@@ -66,12 +66,12 @@ class _CodeVerifyState extends State<CodeVerify> {
                 )),
                 onChanged: (value) {
                   setState(() {
-                    _codeFormKey.currentState.validate();
+                    _codeFormKey.currentState!.validate();
                   });
                   _canSubmitForm = _isFormValid();
                 },
                 validator: (value) {
-                  if (value.isEmpty) {
+                  if (value!.isEmpty) {
                     return "please enter the code";
                   }
 

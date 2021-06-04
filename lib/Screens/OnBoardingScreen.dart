@@ -10,7 +10,7 @@ class OnBoardingScreen extends StatefulWidget {
 }
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
-  PageController _pageController;
+  PageController? _pageController;
   int _currentIndex = 0;
 
   @override
@@ -22,7 +22,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   @override
   void dispose() {
     super.dispose();
-    _pageController.dispose();
+    _pageController!.dispose();
   }
 
   static const _kDuration = const Duration(milliseconds: 300);
@@ -35,7 +35,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   _nextFunction() {
-    _pageController.nextPage(duration: _kDuration, curve: _kCurve);
+    _pageController!.nextPage(duration: _kDuration, curve: _kCurve);
   }
 
   @override

@@ -1,6 +1,6 @@
 class CustomException implements Exception {
-  final String message;
-  final String prefix;
+  final String? message;
+  final String? prefix;
 
   CustomException([this.message, this.prefix]);
 
@@ -10,7 +10,7 @@ class CustomException implements Exception {
 }
 
 class FetchDataException extends CustomException {
-  FetchDataException([String message]) : super(message, "Invalid Request: ");
+  FetchDataException([String? message]) : super(message, "Invalid Request: ");
 }
 
 class BadRequestException extends CustomException {

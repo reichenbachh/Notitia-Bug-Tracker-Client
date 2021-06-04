@@ -20,8 +20,8 @@ class _ResetPassState extends State<ResetPass> {
   bool _textIsHidden = false;
 
   bool _isFormValid() {
-    return ((_passwordFormKey.currentState.isValid &&
-        _passwordFormKey2.currentState.isValid));
+    return _passwordFormKey.currentState!.isValid &&
+        _passwordFormKey2.currentState!.isValid;
   }
 
   void _obscureText() {
@@ -78,7 +78,7 @@ class _ResetPassState extends State<ResetPass> {
                   ),
                 ),
                 validator: (value) {
-                  if (value.isEmpty) {
+                  if (value!.isEmpty) {
                     return "Password field cannot be blank";
                   }
                   return null;
@@ -106,7 +106,7 @@ class _ResetPassState extends State<ResetPass> {
                   ),
                 ),
                 validator: (value) {
-                  if (value.isEmpty) {
+                  if (value!.isEmpty) {
                     return "Password field cannot be blank";
                   }
                   return null;

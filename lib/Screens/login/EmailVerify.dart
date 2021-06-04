@@ -13,7 +13,7 @@ class _EmailVerifyState extends State<EmailVerify> {
   bool _canSubmitForm = false;
 
   bool _isFormValid() {
-    return ((_emailFormKey.currentState.isValid));
+    return _emailFormKey.currentState!.isValid;
   }
 
   @override
@@ -57,7 +57,7 @@ class _EmailVerifyState extends State<EmailVerify> {
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   suffix: _emailFormKey.currentState == null ||
-                          !_emailFormKey.currentState.isValid
+                          !_emailFormKey.currentState!.isValid
                       ? SizedBox(
                           height: 40,
                           child: Image.asset(
@@ -73,12 +73,12 @@ class _EmailVerifyState extends State<EmailVerify> {
                 ),
                 onChanged: (value) {
                   setState(() {
-                    _emailFormKey.currentState.validate();
+                    _emailFormKey.currentState!.validate();
                   });
                   _canSubmitForm = _isFormValid();
                 },
                 validator: (value) {
-                  if (value.isEmpty) {
+                  if (value!.isEmpty) {
                     return "Please enter your email";
                   }
                   final emailRegex = new RegExp(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:notitia/utils.dart';
 
 class Indicator extends StatelessWidget {
-  final int positionIndex, currentIndex;
+  final int? positionIndex, currentIndex;
   const Indicator({this.currentIndex, this.positionIndex});
   @override
   Widget build(BuildContext context) {

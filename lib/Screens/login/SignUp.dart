@@ -32,18 +32,18 @@ class _SignUpState extends State<SignUp> {
   bool _isuserNameFieldValid = false;
   //validate form in realtime
   bool _isFormValid() {
-    return ((_emailFormKey.currentState.isValid &&
-        _usernameFormKey.currentState.isValid &&
-        _passwordFormKey.currentState.isValid));
+    return _emailFormKey.currentState!.isValid &&
+        _usernameFormKey.currentState!.isValid &&
+        _passwordFormKey.currentState!.isValid;
   }
 
   void _isEmailValid(GlobalKey<FormFieldState<dynamic>> formKey) {
-    if (formKey.currentState.isValid) {
+    if (formKey.currentState!.isValid) {
       setState(() {
         _isEmailFieldValid = true;
       });
     }
-    if (!formKey.currentState.isValid) {
+    if (!formKey.currentState!.isValid) {
       setState(() {
         _isEmailFieldValid = false;
       });
@@ -51,12 +51,12 @@ class _SignUpState extends State<SignUp> {
   }
 
   void _isUserNameValid(GlobalKey<FormFieldState<dynamic>> formKey) {
-    if (formKey.currentState.isValid) {
+    if (formKey.currentState!.isValid) {
       setState(() {
         _isuserNameFieldValid = true;
       });
     }
-    if (!formKey.currentState.isValid) {
+    if (!formKey.currentState!.isValid) {
       setState(() {
         _isuserNameFieldValid = false;
       });
@@ -170,12 +170,12 @@ class _SignUpState extends State<SignUp> {
                     onChanged: (value) {
                       _isEmailValid(_emailFormKey);
                       setState(() {
-                        _emailFormKey.currentState.validate();
+                        _emailFormKey.currentState!.validate();
                         _canSubmitForm = _isFormValid();
                       });
                     },
                     validator: (value) {
-                      if (value.length < 2) {
+                      if (value!.length < 2) {
                         return "please enter a username";
                       }
                       final emailRegex = new RegExp(
@@ -219,12 +219,12 @@ class _SignUpState extends State<SignUp> {
                     onChanged: (value) {
                       _isUserNameValid(_usernameFormKey);
                       setState(() {
-                        _usernameFormKey.currentState.validate();
+                        _usernameFormKey.currentState!.validate();
                         _canSubmitForm = _isFormValid();
                       });
                     },
                     validator: (value) {
-                      if (value.length < 2) {
+                      if (value!.length < 2) {
                         return "please enter a username";
                       }
 
@@ -268,12 +268,12 @@ class _SignUpState extends State<SignUp> {
                     ),
                     onChanged: (value) {
                       setState(() {
-                        _passwordFormKey.currentState.validate();
+                        _passwordFormKey.currentState!.validate();
                         _canSubmitForm = _isFormValid();
                       });
                     },
                     validator: (value) {
-                      if (value.length < 2) {
+                      if (value!.length < 2) {
                         return "please enter a password";
                       }
                       return null;
@@ -287,7 +287,7 @@ class _SignUpState extends State<SignUp> {
                   children: [
                     Checkbox(
                       value: false,
-                      onChanged: (bool value) {},
+                      onChanged: (bool? value) {},
                     ),
                     Expanded(
                         child: Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './Screens/MainAppScreen.dart';
 import './Screens/login/SignUp.dart';
 import './Screens/login/SignIn.dart';
 import './Screens/login/EmailVerify.dart';
@@ -13,6 +14,6 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
-    return SignIn();
+    return MainAppScreen();
   }
 }

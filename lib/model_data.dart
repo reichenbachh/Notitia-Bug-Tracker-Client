@@ -1,9 +1,9 @@
 class User {
-  String id;
-  String username;
-  String email;
-  String profileImageUrl;
-  bool isAuthenticated;
+  String? id;
+  String? username;
+  String? email;
+  String? profileImageUrl;
+  bool? isAuthenticated;
 
   User(
       {this.id,

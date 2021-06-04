@@ -23,8 +23,8 @@ class _SignInState extends State<SignIn> {
 
   //validate form in realtime
   bool _isFormValid() {
-    return ((_emailFormKey.currentState.isValid &&
-        _passwordFormKey.currentState.isValid));
+    return _emailFormKey.currentState!.isValid &&
+        _passwordFormKey.currentState!.isValid;
   }
 
   //change hidden state of password field
@@ -37,12 +37,12 @@ class _SignInState extends State<SignIn> {
   bool _isEmailFieldValid = false;
 
   void _isEmailValid(GlobalKey<FormFieldState<dynamic>> formKey) {
-    if (formKey.currentState.isValid) {
+    if (formKey.currentState!.isValid) {
       setState(() {
         _isEmailFieldValid = true;
       });
     }
-    if (!formKey.currentState.isValid) {
+    if (!formKey.currentState!.isValid) {
       setState(() {
         _isEmailFieldValid = false;
       });
@@ -147,12 +147,12 @@ class _SignInState extends State<SignIn> {
                   onChanged: (value) {
                     _isEmailValid(_emailFormKey);
                     setState(() {
-                      _emailFormKey.currentState.validate();
+                      _emailFormKey.currentState!.validate();
                       _canSubmitForm = _isFormValid();
                     });
                   },
                   validator: (value) {
-                    if (value.length < 2) {
+                    if (value!.length < 2) {
                       return "please enter a username";
                     }
                     final emailRegex = new RegExp(
@@ -197,14 +197,14 @@ class _SignInState extends State<SignIn> {
                     ),
                   ),
                   validator: (value) {
-                    if (value.isEmpty) {
+                    if (value!.isEmpty) {
                       return "Password field cannot be blank";
                     }
                     return null;
                   },
                   onChanged: (value) {
                     setState(() {
-                      _passwordFormKey.currentState.validate();
+                      _passwordFormKey.currentState!.validate();
                       _canSubmitForm = _isFormValid();
                     });
                   },
@@ -216,7 +216,7 @@ class _SignInState extends State<SignIn> {
                   children: [
                     Checkbox(
                       value: false,
-                      onChanged: (bool value) {},
+                      onChanged: (bool? value) {},
                     ),
                     Expanded(
                         child: Text(

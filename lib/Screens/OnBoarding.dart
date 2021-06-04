@@ -7,9 +7,9 @@ class OnBoarding extends StatelessWidget {
   final String imageUrl;
   final String smallMessage;
   OnBoarding(
-      {@required this.messageBig,
-      @required this.imageUrl,
-      @required this.smallMessage});
+      {required this.messageBig,
+      required this.imageUrl,
+      required this.smallMessage});
   @override
   Widget build(BuildContext context) {
     final String assetPath = imageUrl;
