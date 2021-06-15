@@ -7,10 +7,10 @@ class User {
 
   User(
       {this.id,
+      this.username,
       this.email,
       this.profileImageUrl,
-      this.isAuthenticated,
-      this.username});
+      this.isAuthenticated});
 }
 
 class OnBoardingElement {

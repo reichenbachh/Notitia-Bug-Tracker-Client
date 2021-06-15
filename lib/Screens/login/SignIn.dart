@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './SignUp.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../../Providers/AuthProvider.dart';
@@ -6,6 +7,7 @@ import '../../utils.dart';
 import 'package:tasty_toast/tasty_toast.dart';
 
 class SignIn extends StatefulWidget {
+  static const routName = "/signin";
   @override
   _SignInState createState() => _SignInState();
 }
@@ -263,6 +265,12 @@ class _SignInState extends State<SignIn> {
                           ),
                         ),
                 ),
+                SizedBox(
+                  height: 10,
+                ),
+                InkWell(
+                    child: Text("Don't have an account ? Sign Up"),
+                    onTap: () => Navigator.of(context).pop()),
                 SizedBox(
                   height: 20,
                 ),

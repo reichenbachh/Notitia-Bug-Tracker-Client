@@ -26,7 +26,6 @@ class HttpAuthClass {
   Future<dynamic> login(Map<String, String> data) async {
     try {
       final datas = jsonEncode(data);
-      print(datas);
       final Uri url = Uri.parse("http://192.168.0.111:5000/auth/login");
       final response = await requests.post(url, headers: headers, body: datas);
       final responseValue = _handleAuthReponses(response);
@@ -41,7 +40,7 @@ class HttpAuthClass {
   dynamic _handleAuthReponses(requests.Response response) {
     switch (response.statusCode) {
       case 200:
-        return response.body;
+        return response;
       case 400:
         throw BadRequestException(response.body.toString());
       case 401:

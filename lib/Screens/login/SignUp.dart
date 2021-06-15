@@ -1,9 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../Providers/AuthProvider.dart';
 import '../../utils.dart';
+import './SignIn.dart';
 import 'package:tasty_toast/tasty_toast.dart';
 
 class SignUp extends StatefulWidget {
@@ -338,14 +338,13 @@ class _SignUpState extends State<SignUp> {
                 SizedBox(
                   height: 20,
                 ),
-                Text("Already have an account? Sign in"),
+                InkWell(
+                  child: Text("Already have an account? Sign in"),
+                  onTap: () => Navigator.of(context).pushNamed(SignIn.routName),
+                ),
                 SizedBox(
                   height: 20,
                 ),
-                GestureDetector(
-                  child: Text("Forgot password?"),
-                  onTap: () {},
-                )
               ],
             ),
           ),

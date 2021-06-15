@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import './Providers/AuthProvider.dart';
+import './Screens/MainAppScreen.dart';
+import './Screens/login/SignUp.dart';
+import './Screens/login/SignIn.dart';
+import './Screens/login/EmailVerify.dart';
+import './Screens/login/ResetPass.dart';
+import './Screens/login/CodeVerify.dart';
+import './Screens/CreateProject.dart';
 import './utils.dart';
 import 'app.dart';
 
@@ -17,10 +24,16 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-            primarySwatch: Colors.blue,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-            primaryColor: convertToHex("#06512C")),
-        home: App(),
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          primaryColor: convertToHex("#06512C"),
+        ),
+        routes: {
+          "/": (ctx) => App(),
+          SignUp.routeName: (ctx) => SignUp(),
+          SignIn.routName: (ctx) => SignIn(),
+          MainAppScreen.routeName: (ctx) => MainAppScreen()
+        },
       ),
     );
   }
