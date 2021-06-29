@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:provider/provider.dart';
 import '../../Providers/AuthProvider.dart';
 import '../../utils.dart';
+import "../../Screens/MainAppScreen.dart";
 import 'package:tasty_toast/tasty_toast.dart';
 
 class SignIn extends StatefulWidget {
@@ -58,7 +59,8 @@ class _SignInState extends State<SignIn> {
       });
 
       await Provider.of<AuthProvider>(context, listen: false).loginUser(data);
-      print(data);
+      Navigator.of(context)
+          .pushNamedAndRemoveUntil(MainAppScreen.routeName, (route) => false);
 
       setState(() {
         _isLoading = false;

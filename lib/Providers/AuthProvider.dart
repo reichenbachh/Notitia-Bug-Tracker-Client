@@ -32,6 +32,36 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<void> validateUser() async {
+    try {
+      final authToken = await secureStorage.read(key: "athorization_token");
+      print(authToken);
+      final authTokenString =
+          authToken == null || authToken == "undefined" ? "" : authToken;
+      final response = await _httpAuthClass.verifyUser(authTokenString);
+
+      final responseValue = jsonDecode(response.body);
+      final convertedValue = responseValue as Map<String, dynamic>;
+
+      final User _authenticatedUser = new User(
+        email: convertedValue["data"]["email"],
+        id: convertedValue["data"]["id"],
+        username: convertedValue["data"]["username"],
+        profileImageUrl: convertedValue["data"]["profileImage"],
+        isAuthenticated: true,
+      );
+
+      _user = _authenticatedUser;
+      String authHeader = response.headers["authorization"];
+      print("check $authHeader");
+      await secureStorage.write(key: "athorization_token", value: authHeader);
+
+      notifyListeners();
+    } catch (e) {
+      print("e $e");
+    }
+  }
+
   Future<void> loginUser(Map<String, String> userDataMap) async {
     try {
       final response = await _httpAuthClass.login(userDataMap);
@@ -47,9 +77,9 @@ class AuthProvider with ChangeNotifier {
       );
 
       _user = _authenticatedUser;
-      print(response.headers["authorisation"]);
+      String authHeader = response.headers["authorization"];
 
-      // secureStorage.write(key: "athorisation_token", value: authHeader);
+      await secureStorage.write(key: "athorization_token", value: authHeader);
     } catch (e) {
       throw e;
     }

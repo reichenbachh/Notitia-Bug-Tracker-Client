@@ -9,10 +9,12 @@ class HttpAuthClass {
     'Charset': 'utf-8'
   };
 
+  static const apiUrl = "http://192.168.0.111:5000";
+
   Future<dynamic> register(Map<String, String> data) async {
     try {
       final datas = jsonEncode(data);
-      final Uri url = Uri.parse("http://192.168.0.111:5000/auth/register");
+      final Uri url = Uri.parse("$apiUrl/auth/register");
       final response = await requests.post(url, headers: headers, body: datas);
       final responseValue = _handleAuthReponses(response);
       return responseValue;
@@ -26,8 +28,26 @@ class HttpAuthClass {
   Future<dynamic> login(Map<String, String> data) async {
     try {
       final datas = jsonEncode(data);
-      final Uri url = Uri.parse("http://192.168.0.111:5000/auth/login");
+      final Uri url = Uri.parse("$apiUrl/auth/login");
       final response = await requests.post(url, headers: headers, body: datas);
+      final responseValue = _handleAuthReponses(response);
+      return responseValue;
+    } on SocketException catch (e) {
+      throw FetchDataException("There is no internet connection");
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  Future<dynamic> verifyUser(String authorisationToken) async {
+    try {
+      final authHeaders = {
+        'Content-Type': 'application/json',
+        'Charset': 'utf-8',
+        'authorization': authorisationToken
+      };
+      final Uri url = Uri.parse("$apiUrl/auth/validateUser");
+      final response = await requests.get(url, headers: authHeaders);
       final responseValue = _handleAuthReponses(response);
       return responseValue;
     } on SocketException catch (e) {
