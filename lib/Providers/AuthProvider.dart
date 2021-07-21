@@ -53,7 +53,6 @@ class AuthProvider with ChangeNotifier {
 
       _user = _authenticatedUser;
       String authHeader = response.headers["authorization"];
-      print("check $authHeader");
       await secureStorage.write(key: "athorization_token", value: authHeader);
 
       notifyListeners();

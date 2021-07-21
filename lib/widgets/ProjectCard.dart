@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:notitia/model_data.dart';
 import '../utils.dart';
 
 class ProjectCard extends StatelessWidget {
-  const ProjectCard({
-    Key? key,
-  }) : super(key: key);
+  final String projectName;
+  final String projectStage;
+  final String role;
+
+  ProjectCard(
+      {required this.projectName,
+      required this.projectStage,
+      required this.role});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: convertToHex("#06512C"),
         borderRadius: BorderRadius.circular(10),
@@ -31,7 +38,7 @@ class ProjectCard extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Text(
-                  "Beta",
+                  projectStage,
                   style: TextStyle(
                       fontSize: 22,
                       color: Colors.white,
@@ -42,7 +49,7 @@ class ProjectCard extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            Text("Bank App Backend",
+            Text(projectName,
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 30,
@@ -62,7 +69,7 @@ class ProjectCard extends StatelessWidget {
                         size: 30,
                       ),
                       Text(
-                        "Project lead",
+                        role,
                         style: TextStyle(
                             color: Colors.white, fontWeight: FontWeight.bold),
                       )

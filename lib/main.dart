@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:notitia/Providers/ProjectProvider.dart';
 import 'package:provider/provider.dart';
 import './Providers/AuthProvider.dart';
 import './Screens/MainAppScreen.dart';
@@ -20,7 +21,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (ctx) => AuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (ctx) => AuthProvider()),
+        ChangeNotifierProvider(create: (ctx) => ProjectProvider())
+      ],
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -32,7 +36,8 @@ class MyApp extends StatelessWidget {
           "/": (ctx) => App(),
           SignUp.routeName: (ctx) => SignUp(),
           SignIn.routName: (ctx) => SignIn(),
-          MainAppScreen.routeName: (ctx) => MainAppScreen()
+          MainAppScreen.routeName: (ctx) => MainAppScreen(),
+          CreateProject.routeName: (ctx) => CreateProject()
         },
       ),
     );

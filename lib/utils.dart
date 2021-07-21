@@ -26,3 +26,7 @@ Color? convertToHex(String color) {
   }
   return convertedValue;
 }
+
+Color? get primCol {
+  return convertToHex("#06512C");
+}

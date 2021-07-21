@@ -13,6 +13,19 @@ class User {
       this.isAuthenticated});
 }
 
+class Project {
+  String projectName;
+  String projectDescription;
+  String projectStage;
+  String role;
+
+  Project(
+      {required this.projectName,
+      required this.projectDescription,
+      required this.projectStage,
+      required this.role});
+}
+
 class OnBoardingElement {
   final String messageBig;
   final String message;

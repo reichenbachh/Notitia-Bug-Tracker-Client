@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:notitia/Providers/AuthProvider.dart';
+import 'package:notitia/Screens/MainAppScreen.dart';
+import 'package:provider/provider.dart';
+import 'package:notitia/Providers/ProjectProvider.dart';
+import 'package:tasty_toast/tasty_toast.dart';
+
 import '../utils.dart';
 
 enum _ProjectStageValues { PreAlpha, Alpha, Beta, Release, Support }
 
+extension parseProjectStateEnums on _ProjectStageValues {
+  String toShortString() {
+    return this.toString().split('.').last;
+  }
+}
+
 class CreateProject extends StatefulWidget {
+  static const routeName = "/createProject";
   const CreateProject({Key? key}) : super(key: key);
 
   @override
@@ -31,6 +44,53 @@ class _CreateProjectState extends State<CreateProject> {
     );
   }
 
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Map<String, dynamic> projectDataMap = {
+    "projectName": "",
+    "projectDesc": "",
+    "projectStage": ""
+  };
+
+  void _submitCreateProject(String userID) {
+    try {
+      bool isValid = _formKey.currentState!.validate();
+      print(isValid);
+      if (!isValid) {
+        return;
+      }
+      _formKey.currentState!.save();
+
+      print(projectDataMap);
+
+      Provider.of<ProjectProvider>(context, listen: false)
+          .createProject(projectDataMap, userID);
+
+      showToast(context, "New project created!",
+          textStyle: TextStyle(color: Colors.white),
+          background: BoxDecoration(color: Colors.green),
+          alignment: Alignment.bottomCenter,
+          duration: Duration(seconds: 4));
+      Navigator.of(context)
+          .push(MaterialPageRoute(
+        builder: (ctx) => MainAppScreen(),
+      ))
+          .then((value) {
+        setState(() async {
+          final userID = Provider.of<AuthProvider>(context).getUserData.id;
+          await Provider.of<ProjectProvider>(context).getProjects(userID!);
+        });
+      });
+    } catch (e) {
+      showToast(context, "An Error occured, please try again",
+          textStyle: TextStyle(color: Colors.white),
+          background: BoxDecoration(color: Colors.green),
+          alignment: Alignment.bottomCenter,
+          duration: Duration(seconds: 4));
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -45,13 +105,24 @@ class _CreateProjectState extends State<CreateProject> {
             child: Column(
               children: [
                 Form(
+                  key: _formKey,
                   child: Column(
                     children: [
                       SizedBox(
                         height: 10,
                       ),
                       TextFormField(
+                        maxLength: 30,
                         decoration: InputDecoration(labelText: "Project Name"),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'please enter a project name';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          projectDataMap['projectName'] = value!;
+                        },
                       ),
                       TextFormField(
                         maxLines: 5,
@@ -59,6 +130,17 @@ class _CreateProjectState extends State<CreateProject> {
                         decoration: InputDecoration(
                           labelText: "Project Description",
                         ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return ' please enter  a project description';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          projectDataMap["projectDesc"] = value!;
+                          projectDataMap['projectStage'] =
+                              _option.toShortString();
+                        },
                       ),
                       SizedBox(
                         height: 20,
@@ -77,7 +159,26 @@ class _CreateProjectState extends State<CreateProject> {
                       stageRadioBtn("Alpha", _ProjectStageValues.Alpha),
                       stageRadioBtn("Beta", _ProjectStageValues.Beta),
                       stageRadioBtn("Release", _ProjectStageValues.Release),
-                      stageRadioBtn("Support", _ProjectStageValues.Support)
+                      stageRadioBtn("Support", _ProjectStageValues.Support),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            String userID = Provider.of<AuthProvider>(context,
+                                    listen: false)
+                                .getUserData
+                                .id!;
+                            _submitCreateProject(userID);
+                          },
+                          child: Text("Create Project"),
+                          style: ElevatedButton.styleFrom(
+                            primary: primCol,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5.0)),
+                            ),
+                          ))
                     ],
                   ),
                 )
