@@ -41,6 +41,20 @@ class ProjectHttp {
     }
   }
 
+  Future<dynamic> fetchProjectsDetails(String projectId) async {
+    try {
+      final Uri url = Uri.parse("$apiUrl/project/getProject/$projectId");
+      final response = await requests.get(url, headers: headers);
+      final responseValue = _handleResponse(response);
+      return responseValue;
+    } on SocketException catch (e) {
+      throw FetchDataException("There is no internet connection");
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
   dynamic _handleResponse(requests.Response response) {
     switch (response.statusCode) {
       case 200:

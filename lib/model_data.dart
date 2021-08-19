@@ -14,16 +14,41 @@ class User {
 }
 
 class Project {
+  String projectId;
   String projectName;
   String projectDescription;
   String projectStage;
   String role;
 
   Project(
-      {required this.projectName,
+      {required this.projectId,
+      required this.projectName,
       required this.projectDescription,
       required this.projectStage,
       required this.role});
+}
+
+class Ticket {
+  String ticketTitle;
+  String ticketDesc;
+  String userId;
+  String projectId;
+  String? assignedDev;
+  String submittedDev;
+  String ticketPriority;
+  String ticketStatus;
+  String ticketType;
+
+  Ticket(
+      {required this.ticketTitle,
+      required this.ticketDesc,
+      required this.userId,
+      required this.projectId,
+      this.assignedDev,
+      required this.submittedDev,
+      required this.ticketPriority,
+      required this.ticketStatus,
+      required this.ticketType});
 }
 
 class OnBoardingElement {

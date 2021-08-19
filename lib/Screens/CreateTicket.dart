@@ -4,44 +4,62 @@ import 'package:notitia/Screens/MainAppScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:notitia/Providers/ProjectProvider.dart';
 import 'package:tasty_toast/tasty_toast.dart';
-
 import '../utils.dart';
 
-enum _ProjectStageValues { PreAlpha, Alpha, Beta, Release, Support }
+class CreateTicket extends StatefulWidget {
+  CreateTicket({Key? key}) : super(key: key);
 
-extension parseProjectStateEnums on _ProjectStageValues {
+  @override
+  _CreateTicketState createState() => _CreateTicketState();
+}
+
+enum TicketStatus { Open, Closed }
+enum TicketPriority { High, Moderate, Low }
+enum TicketType { Bug, Error, FeatureRequest }
+
+extension parseTicketStatus on TicketStatus {
   String toShortString() {
     return this.toString().split('.').last;
   }
 }
 
-class CreateProject extends StatefulWidget {
-  static const routeName = "/createProject";
-  const CreateProject({Key? key}) : super(key: key);
-
-  @override
-  _CreateProjectState createState() => _CreateProjectState();
+extension parseTicketType on TicketType {
+  String toShortString() {
+    return this.toString().split('.').last;
+  }
 }
 
-class _CreateProjectState extends State<CreateProject> {
-  _ProjectStageValues _option = _ProjectStageValues.PreAlpha;
+extension parseTicketPriority on TicketPriority {
+  String toShortString() {
+    return this.toString().split('.').last;
+  }
+}
 
-  Widget stageRadioBtn(String title, _ProjectStageValues enumValue) {
-    return ListTile(
-      title: Text(title,
-          style: TextStyle(
-            fontSize: 15,
-          )),
-      leading: Radio(
-        groupValue: _option,
-        onChanged: (_ProjectStageValues? value) {
-          setState(() {
-            _option = value!;
-          });
-        },
-        value: enumValue,
-      ),
-    );
+class _CreateTicketState extends State<CreateTicket> {
+  TicketPriority _priority = TicketPriority.Low;
+  TicketStatus _status = TicketStatus.Open;
+  TicketType _type = TicketType.FeatureRequest;
+
+  List<dynamic> renderRadioRowType(TicketPriority priority) {
+    return TicketPriority.values.map((value) {
+      Row(
+        children: [
+          Row(
+            children: [
+              Radio<TicketPriority>(
+                value: value,
+                groupValue: _priority,
+                onChanged: (TicketPriority? value) {
+                  setState(() {
+                    _priority = value!;
+                  });
+                },
+              ),
+            ],
+          )
+        ],
+      );
+    }).toList();
   }
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -138,8 +156,8 @@ class _CreateProjectState extends State<CreateProject> {
                         },
                         onSaved: (value) {
                           projectDataMap["projectDesc"] = value!;
-                          projectDataMap['projectStage'] =
-                              _option.toShortString();
+                          // projectDataMap['projectStage'] =
+                          //     _option.toShortString();
                         },
                       ),
                       SizedBox(
@@ -155,11 +173,6 @@ class _CreateProjectState extends State<CreateProject> {
                               color: convertToHex("#06512C")),
                         ),
                       ),
-                      stageRadioBtn("Pre-Alpha", _ProjectStageValues.PreAlpha),
-                      stageRadioBtn("Alpha", _ProjectStageValues.Alpha),
-                      stageRadioBtn("Beta", _ProjectStageValues.Beta),
-                      stageRadioBtn("Release", _ProjectStageValues.Release),
-                      stageRadioBtn("Support", _ProjectStageValues.Support),
                       SizedBox(
                         height: 20,
                       ),

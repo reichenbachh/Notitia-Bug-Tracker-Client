@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notitia/Providers/ProjectProvider.dart';
+import 'package:notitia/Screens/TicketsWorkScreen.dart';
 import 'package:notitia/Screens/login/SignIn.dart';
 import './CreateProject.dart';
 import 'package:notitia/Screens/login/SignUp.dart';
@@ -90,6 +91,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
                           projectName: data.projects[i].projectName,
                           projectStage: data.projects[i].projectStage,
                           role: data.projects[i].role,
+                          projectId: data.projects[i].projectId,
                         );
                       }),
                 );

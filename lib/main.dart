@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notitia/Providers/ProjectProvider.dart';
+import 'package:notitia/Screens/TicketsScreen.dart';
+import 'package:notitia/Screens/TicketsWorkScreen.dart';
 import 'package:provider/provider.dart';
 import './Providers/AuthProvider.dart';
 import './Screens/MainAppScreen.dart';
@@ -37,7 +39,9 @@ class MyApp extends StatelessWidget {
           SignUp.routeName: (ctx) => SignUp(),
           SignIn.routName: (ctx) => SignIn(),
           MainAppScreen.routeName: (ctx) => MainAppScreen(),
-          CreateProject.routeName: (ctx) => CreateProject()
+          CreateProject.routeName: (ctx) => CreateProject(),
+          TicketScreen.routeName: (ctx) => TicketScreen(),
+          Ticketwork.routeName: (ctx) => Ticketwork()
         },
       ),
     );
