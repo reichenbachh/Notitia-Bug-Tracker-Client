@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:notitia/Providers/ProjectProvider.dart';
+import 'package:notitia/Screens/CreateTicket.dart';
 import 'package:notitia/utils.dart';
 import 'package:provider/provider.dart';
 
 class TicketScreen extends StatelessWidget {
   static const routeName = "/ticketScreen";
-  const TicketScreen({Key? key}) : super(key: key);
+  final String? projectID;
+
+  const TicketScreen({this.projectID});
 
   @override
   Widget build(BuildContext context) {
     final tickets = Provider.of<ProjectProvider>(context).tickets;
+    print(tickets);
     return DefaultTabController(
         length: 3,
         child: Scaffold(
@@ -38,11 +42,15 @@ class TicketScreen extends StatelessWidget {
               ? TabBarView(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: ListView(
-                        children: [issueItem(), issueItem()],
-                      ),
-                    ),
+                        padding: const EdgeInsets.only(top: 20),
+                        child: ListView.builder(
+                            itemCount: tickets.length,
+                            itemBuilder: (ctx, i) => issueItem(
+                                ticketTitle: tickets[i].ticketTitle,
+                                asignedDev: tickets[i].assignedDev,
+                                submittedDev: tickets[i].submittedDev,
+                                priority: tickets[i].ticketPriority,
+                                ticketDesc: tickets[i].ticketDesc))),
                     Icon(Icons.directions_transit),
                     Icon(Icons.directions_bike),
                   ],
@@ -98,7 +106,9 @@ class TicketScreen extends StatelessWidget {
                 backgroundColor: primCol,
                 labelStyle: TextStyle(fontSize: 18.0),
                 label: "Add Ticket",
-                onTap: () => print('FIRST CHILD'),
+                onTap: () => Navigator.of(context).pushNamed(
+                    CreateTicket.routeName,
+                    arguments: {"id": projectID}),
               ),
               SpeedDialChild(
                 foregroundColor: Colors.white,
@@ -147,7 +157,26 @@ Future<void> addUserModal(BuildContext context) {
       });
 }
 
-Widget issueItem() {
+Widget issueItem({
+  String? asignedDev,
+  String? ticketDesc,
+  String? submittedDev,
+  String? ticketTitle,
+  String? priority,
+}) {
+  Color priorityColorGetter() {
+    Color color;
+    if (priority == "Low") {
+      return color = Colors.yellow;
+    }
+    if (priority == "Meduim") {
+      return color = Colors.orange;
+    }
+
+    color = Colors.red;
+    return color;
+  }
+
   return Card(
     color: primCol,
     elevation: 7,
@@ -157,14 +186,15 @@ Widget issueItem() {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Ticket creator",
+            "Submitter: ${submittedDev!}",
             style: TextStyle(
                 fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
           ),
           SizedBox(
             height: 10,
           ),
-          Text("Ticket description",
+          Text(ticketDesc!,
+              overflow: TextOverflow.fade,
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.white,
@@ -174,7 +204,7 @@ Widget issueItem() {
           ),
           Row(
             children: [
-              Text("Assigned Dev",
+              Text("Assigned To: $submittedDev",
                   style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
@@ -182,7 +212,7 @@ Widget issueItem() {
               Spacer(),
               Icon(
                 Icons.label_important,
-                color: Colors.yellow,
+                color: priorityColorGetter(),
               )
             ],
           )

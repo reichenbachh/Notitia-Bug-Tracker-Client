@@ -1,76 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:notitia/Providers/AuthProvider.dart';
 import 'package:notitia/Screens/MainAppScreen.dart';
+import 'package:notitia/Screens/TicketsWorkScreen.dart';
 import 'package:provider/provider.dart';
 import 'package:notitia/Providers/ProjectProvider.dart';
 import 'package:tasty_toast/tasty_toast.dart';
 import '../utils.dart';
 
 class CreateTicket extends StatefulWidget {
+  static const routeName = "/createTicket";
   CreateTicket({Key? key}) : super(key: key);
 
   @override
   _CreateTicketState createState() => _CreateTicketState();
 }
 
-enum TicketStatus { Open, Closed }
-enum TicketPriority { High, Moderate, Low }
-enum TicketType { Bug, Error, FeatureRequest }
-
-extension parseTicketStatus on TicketStatus {
-  String toShortString() {
-    return this.toString().split('.').last;
-  }
-}
-
-extension parseTicketType on TicketType {
-  String toShortString() {
-    return this.toString().split('.').last;
-  }
-}
-
-extension parseTicketPriority on TicketPriority {
-  String toShortString() {
-    return this.toString().split('.').last;
-  }
-}
-
 class _CreateTicketState extends State<CreateTicket> {
-  TicketPriority _priority = TicketPriority.Low;
-  TicketStatus _status = TicketStatus.Open;
-  TicketType _type = TicketType.FeatureRequest;
-
-  List<dynamic> renderRadioRowType(TicketPriority priority) {
-    return TicketPriority.values.map((value) {
-      Row(
-        children: [
-          Row(
-            children: [
-              Radio<TicketPriority>(
-                value: value,
-                groupValue: _priority,
-                onChanged: (TicketPriority? value) {
-                  setState(() {
-                    _priority = value!;
-                  });
-                },
-              ),
-            ],
-          )
-        ],
-      );
-    }).toList();
-  }
-
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  Map<String, dynamic> projectDataMap = {
-    "projectName": "",
-    "projectDesc": "",
-    "projectStage": ""
+  Map<String, dynamic> ticketDataMap = {
+    "ticketTitle": "",
+    "ticketDesc": "",
+    "assignedDev": "",
+    "submittedDev": "",
+    "ticketPriority": "",
+    "ticketStatus": "",
+    "ticketType": "",
   };
 
-  void _submitCreateProject(String userID) async {
+  void _submitCreateProject() async {
     try {
       bool isValid = _formKey.currentState!.validate();
       print(isValid);
@@ -79,26 +37,43 @@ class _CreateTicketState extends State<CreateTicket> {
       }
       _formKey.currentState!.save();
 
-      print(projectDataMap);
+      final projectID = Provider.of<ProjectProvider>(context, listen: false)
+          .getSelectedProjectID;
+      final submittedDev =
+          Provider.of<AuthProvider>(context, listen: false).getUserData.email;
+      final userID =
+          Provider.of<AuthProvider>(context, listen: false).getUserData.id;
 
-      await Provider.of<ProjectProvider>(context, listen: false)
-          .createProject(projectDataMap, userID);
+      print(projectID);
+
+      ticketDataMap["ticketPriority"] = priorityDrop;
+      ticketDataMap["ticketStatus"] = ticketStatus;
+      ticketDataMap["ticketType"] = ticketType;
+      ticketDataMap["submittedDev"] = submittedDev;
+      ticketDataMap["assignedDev"] = submittedDev;
+
+      await Provider.of<ProjectProvider>(context, listen: false).createTicket(
+        ticketDataMap,
+        userID!,
+        projectID,
+      );
 
       showToast(context, "New project created!",
           textStyle: TextStyle(color: Colors.white),
           background: BoxDecoration(color: Colors.green),
           alignment: Alignment.bottomCenter,
           duration: Duration(seconds: 4));
-      Navigator.of(context)
-          .push(MaterialPageRoute(
-        builder: (ctx) => MainAppScreen(),
-      ))
-          .then((value) {
-        setState(() async {
-          final userID = Provider.of<AuthProvider>(context).getUserData.id;
-          await Provider.of<ProjectProvider>(context).getProjects(userID!);
-        });
-      });
+
+      Navigator.of(context).pop();
+      //     .push(MaterialPageRoute(
+      //   builder: (ctx) => Ticketwork(),
+      // ))
+      //     .then((value) {
+      //   setState(() async {
+      //     await Provider.of<ProjectProvider>(context)
+      //         .getProjectDetails(projectID);
+      //   });
+      // });
     } catch (e) {
       showToast(context, "An Error occured, please try again",
           textStyle: TextStyle(color: Colors.white),
@@ -109,6 +84,13 @@ class _CreateTicketState extends State<CreateTicket> {
     }
   }
 
+  String priorityDrop = "Low";
+  String ticketType = "Feature request";
+  String ticketStatus = "Open";
+
+  List<String> priorities = ["High", "Moderate", "Low"];
+  List<String> types = ["Feature request", "Bug", "Error"];
+  List<String> status = ["Open", "Closed"];
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -131,31 +113,31 @@ class _CreateTicketState extends State<CreateTicket> {
                       ),
                       TextFormField(
                         maxLength: 30,
-                        decoration: InputDecoration(labelText: "Project Name"),
+                        decoration: InputDecoration(labelText: "Ticket Title "),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return 'please enter a project name';
+                            return 'please enter a ticket name';
                           }
                           return null;
                         },
                         onSaved: (value) {
-                          projectDataMap['projectName'] = value!;
+                          ticketDataMap['ticketTitle'] = value!;
                         },
                       ),
                       TextFormField(
                         maxLines: 5,
                         maxLength: 200,
                         decoration: InputDecoration(
-                          labelText: "Project Description",
+                          labelText: "Ticket Description",
                         ),
                         validator: (value) {
                           if (value!.isEmpty) {
-                            return ' please enter  a project description';
+                            return ' please enter  a ticket description';
                           }
                           return null;
                         },
                         onSaved: (value) {
-                          projectDataMap["projectDesc"] = value!;
+                          ticketDataMap["ticketDesc"] = value!;
                           // projectDataMap['projectStage'] =
                           //     _option.toShortString();
                         },
@@ -166,23 +148,90 @@ class _CreateTicketState extends State<CreateTicket> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "Select a project stage",
+                          "Ticket priority",
                           style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: convertToHex("#06512C")),
+                              fontSize: 20, color: convertToHex("#06512C")),
                         ),
                       ),
                       SizedBox(
-                        height: 20,
+                        height: 5,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: DropdownButton(
+                          value: priorityDrop,
+                          items: priorities
+                              .map((item) => DropdownMenuItem(
+                                    value: item,
+                                    child: Text(item),
+                                  ))
+                              .toList(),
+                          onChanged: (String? value) {
+                            setState(() {
+                              priorityDrop = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Ticket Type",
+                          style: TextStyle(
+                              fontSize: 20, color: convertToHex("#06512C")),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: DropdownButton(
+                          value: ticketType,
+                          items: types
+                              .map((item) => DropdownMenuItem(
+                                    value: item,
+                                    child: Text(item),
+                                  ))
+                              .toList(),
+                          onChanged: (String? value) {
+                            setState(() {
+                              ticketType = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Ticket Status",
+                          style: TextStyle(
+                              fontSize: 20, color: convertToHex("#06512C")),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: DropdownButton(
+                          value: ticketStatus,
+                          items: status
+                              .map((item) => DropdownMenuItem(
+                                    value: item,
+                                    child: Text(item),
+                                  ))
+                              .toList(),
+                          onChanged: (String? value) {
+                            setState(() {
+                              ticketStatus = value!;
+                            });
+                          },
+                        ),
                       ),
                       ElevatedButton(
                           onPressed: () {
-                            String userID = Provider.of<AuthProvider>(context,
-                                    listen: false)
-                                .getUserData
-                                .id!;
-                            _submitCreateProject(userID);
+                            _submitCreateProject();
                           },
                           child: Text("Create Project"),
                           style: ElevatedButton.styleFrom(

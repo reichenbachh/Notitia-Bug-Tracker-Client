@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 
 class Ticketwork extends StatefulWidget {
   static const routeName = "/workScreen";
+  final projectID;
+  Ticketwork({this.projectID});
   @override
   _TicketworkState createState() => _TicketworkState();
 }
@@ -21,15 +23,16 @@ class _TicketworkState extends State<Ticketwork> {
   }
 
   Future<void> _fetchTicket() async {
-    final projectId = ModalRoute.of(context)!.settings.arguments as Map;
-    return Provider.of<ProjectProvider>(context)
-        .getProjectDetails(projectId["id"]);
+    String id = widget.projectID;
+    return Provider.of<ProjectProvider>(context).getProjectDetails(id);
   }
 
-  static const List<Widget> widgetOptions = <Widget>[
-    TicketScreen(),
-    CommScreen()
-  ];
+  Widget returnBody(int index) {
+    List<Widget> widgetOption = <Widget>[TicketScreen(), CommScreen()];
+
+    return widgetOption.elementAt(index);
+  }
+
   int _selectedIndex = 0;
   void _onItemTapped(int index) {
     setState(() {
@@ -56,10 +59,10 @@ class _TicketworkState extends State<Ticketwork> {
           return Container(
             child: Scaffold(
               appBar: AppBar(
-                title: Text("Project Name"),
+                title: Text(data.selectedProjectName),
                 centerTitle: true,
               ),
-              body: widgetOptions.elementAt(_selectedIndex),
+              body: returnBody(_selectedIndex),
               bottomNavigationBar: BottomNavigationBar(
                 items: const <BottomNavigationBarItem>[
                   BottomNavigationBarItem(

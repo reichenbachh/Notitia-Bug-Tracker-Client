@@ -55,6 +55,42 @@ class ProjectHttp {
     }
   }
 
+  Future<dynamic> createTicket(
+      String projectId, String userID, Map<String, dynamic> dataMap) async {
+    try {
+      print(projectId);
+      final datas = jsonEncode(dataMap);
+      final Uri url = Uri.parse(
+          "$apiUrl/ticket/createTicket?userId=$userID&projectId=$projectId");
+      final response = await requests.post(url, headers: headers, body: datas);
+      final responseValue = _handleResponse(response);
+      return responseValue;
+    } on SocketException catch (e) {
+      throw FetchDataException("There is no internet connection");
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  Future<dynamic> getTicketInfo(
+      String projectId, String userID, Map<String, dynamic> dataMap) async {
+    try {
+      print(projectId);
+      final datas = jsonEncode(dataMap);
+      final Uri url = Uri.parse(
+          "$apiUrl/ticket/createTicket?userId=$userID&projectId=$projectId");
+      final response = await requests.post(url, headers: headers, body: datas);
+      final responseValue = _handleResponse(response);
+      return responseValue;
+    } on SocketException catch (e) {
+      throw FetchDataException("There is no internet connection");
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
   dynamic _handleResponse(requests.Response response) {
     switch (response.statusCode) {
       case 200:

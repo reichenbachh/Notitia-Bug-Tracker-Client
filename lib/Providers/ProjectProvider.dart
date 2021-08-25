@@ -3,6 +3,10 @@ import 'package:notitia/Providers/ProjectHttpClass.dart';
 import 'package:notitia/model_data.dart';
 
 class ProjectProvider with ChangeNotifier {
+  String _selectedProjectID = "";
+
+  String _seletedProjectName = "";
+
   List<Project> _projects = [];
 
   List<Ticket> _tickets = [];
@@ -13,6 +17,18 @@ class ProjectProvider with ChangeNotifier {
 
   List<Ticket> get tickets {
     return [..._tickets];
+  }
+
+  String get selectedProjectName {
+    return _seletedProjectName;
+  }
+
+  String get getSelectedProjectID {
+    return _selectedProjectID;
+  }
+
+  void setSeletedProject(String id) {
+    _selectedProjectID = id;
   }
 
   ProjectHttp _projectHttp = new ProjectHttp();
@@ -59,7 +75,7 @@ class ProjectProvider with ChangeNotifier {
       final res = await _projectHttp.fetchProjectsDetails(projectId);
       print(res);
       final convertedList = res["data"]["tickets"] as List;
-
+      _seletedProjectName = res["data"]["projectName"];
       if (convertedList.length == 0) {
         return _tickets = [];
       }
@@ -73,6 +89,7 @@ class ProjectProvider with ChangeNotifier {
             userId: element["userId"],
             projectId: element["projectId"],
             submittedDev: element["submittedDev"],
+            assignedDev: element["assignedDev"],
             ticketPriority: element["ticketPriority"],
             ticketStatus: element["ticketStatus"],
             ticketType: element["ticketType"]));
@@ -82,6 +99,18 @@ class ProjectProvider with ChangeNotifier {
 
       _tickets = dataList;
       print(_tickets);
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  Future<dynamic> createTicket(
+      Map<String, dynamic> dataMap, String userID, String projectID) async {
+    try {
+      final res = await _projectHttp.createTicket(projectID, userID, dataMap);
+      print(res);
+      notifyListeners();
     } catch (e) {
       print(e);
       throw e;

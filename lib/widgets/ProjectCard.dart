@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:notitia/Providers/ProjectProvider.dart';
 import 'package:notitia/Screens/TicketsScreen.dart';
 import 'package:notitia/Screens/TicketsWorkScreen.dart';
+import 'package:provider/provider.dart';
 import '../utils.dart';
 
 class ProjectCard extends StatelessWidget {
@@ -41,8 +43,14 @@ class ProjectCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        Navigator.of(context)
-            .pushNamed(Ticketwork.routeName, arguments: {"id": projectId});
+        Provider.of<ProjectProvider>(context, listen: false)
+            .setSeletedProject(projectId);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (ctx) => Ticketwork(
+                      projectID: projectId,
+                    )));
       },
       child: Container(
         margin: EdgeInsets.only(bottom: 10),
