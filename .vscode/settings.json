@@ -1,12 +1,14 @@
 {
-    "dart.flutterAdditionalArgs": [
-        "--no-sound-null-safety"
-    ],
-    "dart.vmAdditionalArgs": [
-        "--no-sound-null-safety"
-    ],
-    "[dart]": {
-        "editor.defaultFormatter": "Dart-Code.dart-code",
-        "editor.formatOnSave": true
-    },
-}
+    "editor.defaultFormatter": "Dart-Code.dart-code"
+} // {
+//     "dart.flutterAdditionalArgs": [
+//         "--no-sound-null-safety"
+//     ],
+//     "dart.vmAdditionalArgs": [
+//         "--no-sound-null-safety"
+//     ],
+//     "[dart]": {
+//         "editor.defaultFormatter": "Dart-Code.dart-code",
+//         "editor.formatOnSave": true
+//     },
+// }
