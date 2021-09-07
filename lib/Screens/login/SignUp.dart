@@ -283,19 +283,6 @@ class _SignUpState extends State<SignUp> {
                 SizedBox(
                   height: 20,
                 ),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: false,
-                      onChanged: (bool? value) {},
-                    ),
-                    Expanded(
-                        child: Text(
-                      "By creating an account, you agree to ourTerm & Conditions",
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    ))
-                  ],
-                ),
                 SizedBox(
                   height: 20,
                 ),

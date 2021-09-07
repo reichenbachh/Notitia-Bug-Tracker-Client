@@ -33,6 +33,7 @@ dependencies:
   agora_rtc_engine: ^4.0.6
   permission_handler: ^8.1.4+2
   dash_chat: ^1.1.16
+  socket_io_client: ^1.0.1
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.0

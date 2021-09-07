@@ -19,18 +19,15 @@ class _CommScreenState extends State<CommScreen> {
   }
 
   Future<void> onJoin() async {
-    print("yyyyyyyyyyyyyyyyy");
     await _handleCameraAndMic(Permission.camera);
     await _handleCameraAndMic(Permission.microphone);
-
-    // final String chanell = Provider.of<ProjectProvider>(context).ge
 
     Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => VideoCallPage(
-            appID: "c7e1ccdaafeb4ff886c9653d018e50d3",
-            channelName: "aadsdasd",
+            appID: "e79f6d41892f485aa12ea9ffa83edac7",
+            channelName: "chanell1",
           ),
         ));
   }
