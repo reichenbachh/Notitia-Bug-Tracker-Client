@@ -1,4 +1,6 @@
-// {
+{
+    "editor.defaultFormatter": "Dart-Code.dart-code"
+} // {
 //     "dart.flutterAdditionalArgs": [
 //         "--no-sound-null-safety"
 //     ],

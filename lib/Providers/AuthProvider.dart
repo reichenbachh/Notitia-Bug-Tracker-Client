@@ -35,7 +35,6 @@ class AuthProvider with ChangeNotifier {
   Future<void> validateUser() async {
     try {
       final authToken = await secureStorage.read(key: "athorization_token");
-      print(authToken);
       final authTokenString =
           authToken == null || authToken == "undefined" ? "" : authToken;
       final response = await _httpAuthClass.verifyUser(authTokenString);

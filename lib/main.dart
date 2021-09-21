@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notitia/Providers/ProjectProvider.dart';
 import 'package:notitia/Screens/CreateTicket.dart';
+import 'package:notitia/Screens/TicketDetails.dart';
 import 'package:notitia/Screens/TicketsScreen.dart';
 import 'package:notitia/Screens/TicketsWorkScreen.dart';
 import 'package:provider/provider.dart';
@@ -8,9 +9,6 @@ import './Providers/AuthProvider.dart';
 import './Screens/MainAppScreen.dart';
 import './Screens/login/SignUp.dart';
 import './Screens/login/SignIn.dart';
-import './Screens/login/EmailVerify.dart';
-import './Screens/login/ResetPass.dart';
-import './Screens/login/CodeVerify.dart';
 import './Screens/CreateProject.dart';
 import './utils.dart';
 import 'app.dart';
@@ -43,7 +41,8 @@ class MyApp extends StatelessWidget {
           CreateProject.routeName: (ctx) => CreateProject(),
           TicketScreen.routeName: (ctx) => TicketScreen(),
           Ticketwork.routeName: (ctx) => Ticketwork(),
-          CreateTicket.routeName: (ctx) => CreateTicket()
+          CreateTicket.routeName: (ctx) => CreateTicket(),
+          TicketDetails.routeName: (ctx) => TicketDetails()
         },
       ),
     );

@@ -9,8 +9,7 @@ class HttpAuthClass {
     'Charset': 'utf-8'
   };
 
-
-  static const apiUrl = "http://192.168.0.111:5000";
+  static const apiUrl = "http://172.18.176.1:5000";
 
   Future<dynamic> register(Map<String, String> data) async {
     try {

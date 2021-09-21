@@ -4,13 +4,15 @@ class User {
   String? email;
   String? profileImageUrl;
   bool? isAuthenticated;
+  String? role;
 
   User(
       {this.id,
       this.username,
       this.email,
       this.profileImageUrl,
-      this.isAuthenticated});
+      this.isAuthenticated,
+      this.role});
 }
 
 class Project {
@@ -29,26 +31,28 @@ class Project {
 }
 
 class Ticket {
-  String ticketTitle;
-  String ticketDesc;
-  String userId;
-  String projectId;
+  String? id;
+  String? ticketTitle;
+  String? ticketDesc;
+  String? userId;
+  String? projectId;
   String? assignedDev;
-  String submittedDev;
-  String ticketPriority;
-  String ticketStatus;
-  String ticketType;
+  String? submittedDev;
+  String? ticketPriority;
+  String? ticketStatus;
+  String? ticketType;
 
   Ticket(
-      {required this.ticketTitle,
-      required this.ticketDesc,
-      required this.userId,
-      required this.projectId,
+      {this.id,
+      this.ticketTitle,
+      this.ticketDesc,
+      this.userId,
+      this.projectId,
       this.assignedDev,
-      required this.submittedDev,
-      required this.ticketPriority,
-      required this.ticketStatus,
-      required this.ticketType});
+      this.submittedDev,
+      this.ticketPriority,
+      this.ticketStatus,
+      this.ticketType});
 }
 
 class OnBoardingElement {

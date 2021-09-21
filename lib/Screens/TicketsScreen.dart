@@ -1,20 +1,184 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:notitia/Providers/AuthProvider.dart';
 import 'package:notitia/Providers/ProjectProvider.dart';
 import 'package:notitia/Screens/CreateTicket.dart';
+import 'package:notitia/Screens/TicketDetails.dart';
 import 'package:notitia/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:tasty_toast/tasty_toast.dart';
 
-class TicketScreen extends StatelessWidget {
+class TicketScreen extends StatefulWidget {
   static const routeName = "/ticketScreen";
   final String? projectID;
 
   const TicketScreen({this.projectID});
 
   @override
+  _TicketScreenState createState() => _TicketScreenState();
+}
+
+class _TicketScreenState extends State<TicketScreen> {
+  bool _isLoading = false;
+
+  String role = "Project Manager";
+  final _formKey = GlobalKey<FormState>();
+  List<String> roles = [
+    "Project Lead",
+    "Project Manager",
+    "Developer",
+    "Submitter"
+  ];
+
+  Map<String, String> dataMap = {
+    "email": "",
+    "role": "",
+    "projectName": "testProject"
+  };
+
+  Future<void> addUserToProject() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      bool isFormValid = _formKey.currentState!.validate();
+
+      if (!isFormValid) {
+        return;
+      }
+
+      _formKey.currentState!.save();
+
+      final providerData = Provider.of<ProjectProvider>(context, listen: false);
+      String projectID = providerData.getSelectedProjectID;
+      // String projectName = providerData.selectedProjectName;
+      dataMap["role"] = role;
+      print(dataMap);
+      await providerData.inviteToProject(projectID, dataMap);
+      setState(() {
+        _isLoading = false;
+      });
+      showToast(context, "User added",
+          textStyle: TextStyle(color: Colors.white),
+          background: BoxDecoration(color: Colors.green),
+          alignment: Alignment.bottomCenter,
+          duration: Duration(seconds: 4));
+    } catch (e) {
+      print(e);
+      setState(() {
+        _isLoading = false;
+      });
+      showToast(context, "An Error occured, please try again",
+          textStyle: TextStyle(color: Colors.white),
+          background: BoxDecoration(color: Colors.red),
+          alignment: Alignment.bottomCenter,
+          duration: Duration(seconds: 4));
+    }
+  }
+
+  Color priorityColorGetter(String priority) {
+    Color color;
+    if (priority == "Low") {
+      return color = Colors.yellow;
+    }
+    if (priority == "Meduim") {
+      return color = Colors.orange;
+    }
+
+    color = Colors.red;
+    return color;
+  }
+
+  Future<void> addUserModal(BuildContext context) {
+    return showModalBottomSheet<void>(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter mutate) {
+            return SingleChildScrollView(
+              child: Container(
+                  child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      Text(
+                        "Add a user",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                      TextFormField(
+                        decoration: InputDecoration(
+                            prefixIcon: Icon(
+                          Icons.person_add,
+                          color: primCol,
+                        )),
+                        keyboardType: TextInputType.text,
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "please enter a username";
+                          }
+                          return null;
+                        },
+                        onSaved: (val) {
+                          dataMap["email"] = val!;
+                        },
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "Select a role",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: DropdownButton(
+                          value: role,
+                          items: roles
+                              .map((item) => DropdownMenuItem(
+                                    value: item,
+                                    child: Text(item),
+                                  ))
+                              .toList(),
+                          onChanged: (String? value) {
+                            mutate(() {
+                              role = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      ElevatedButton(
+                          onPressed: () {
+                            addUserToProject();
+                          },
+                          child: _isLoading
+                              ? CircularProgressIndicator()
+                              : Text("Add User"),
+                          style: ElevatedButton.styleFrom(
+                            primary: primCol,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(5.0)),
+                            ),
+                          ))
+                    ],
+                  ),
+                ),
+              )),
+            );
+          });
+        });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final tickets = Provider.of<ProjectProvider>(context).tickets;
-    print(tickets);
     return DefaultTabController(
         length: 3,
         child: Scaffold(
@@ -45,12 +209,29 @@ class TicketScreen extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 20),
                         child: ListView.builder(
                             itemCount: tickets.length,
-                            itemBuilder: (ctx, i) => issueItem(
-                                ticketTitle: tickets[i].ticketTitle,
-                                asignedDev: tickets[i].assignedDev,
-                                submittedDev: tickets[i].submittedDev,
-                                priority: tickets[i].ticketPriority,
-                                ticketDesc: tickets[i].ticketDesc))),
+                            itemBuilder: (ctx, i) => GestureDetector(
+                                  onTap: () {
+                                    Navigator.of(context).pushNamed(
+                                        TicketDetails.routeName,
+                                        arguments: {"id": tickets[i].id});
+                                  },
+                                  child: Card(
+                                    elevation: 2,
+                                    child: ListTile(
+                                      title: Text(tickets[i].ticketTitle!),
+                                      trailing: Container(
+                                        width: 10,
+                                        height: 10,
+                                        decoration: new BoxDecoration(
+                                          color: priorityColorGetter(
+                                              tickets[i].ticketPriority!),
+                                          shape: BoxShape.circle,
+                                        ),
+                                      ),
+                                      subtitle: Text(tickets[i].ticketType!),
+                                    ),
+                                  ),
+                                ))),
                     Icon(Icons.directions_transit),
                     Icon(Icons.directions_bike),
                   ],
@@ -108,7 +289,7 @@ class TicketScreen extends StatelessWidget {
                 label: "Add Ticket",
                 onTap: () => Navigator.of(context).pushNamed(
                     CreateTicket.routeName,
-                    arguments: {"id": projectID}),
+                    arguments: {"id": widget.projectID}),
               ),
               SpeedDialChild(
                 foregroundColor: Colors.white,
@@ -122,102 +303,4 @@ class TicketScreen extends StatelessWidget {
           ),
         ));
   }
-}
-
-Future<void> addUserModal(BuildContext context) {
-  return showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-            child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Column(
-            children: [
-              Text(
-                "Add a user",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              TextFormField(
-                decoration: InputDecoration(
-                    prefixIcon: Icon(
-                  Icons.person_add,
-                  color: primCol,
-                )),
-                keyboardType: TextInputType.text,
-                validator: (value) {
-                  if (value!.length < 2) {
-                    return "please enter a username";
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
-        ));
-      });
-}
-
-Widget issueItem({
-  String? asignedDev,
-  String? ticketDesc,
-  String? submittedDev,
-  String? ticketTitle,
-  String? priority,
-}) {
-  Color priorityColorGetter() {
-    Color color;
-    if (priority == "Low") {
-      return color = Colors.yellow;
-    }
-    if (priority == "Meduim") {
-      return color = Colors.orange;
-    }
-
-    color = Colors.red;
-    return color;
-  }
-
-  return Card(
-    color: primCol,
-    elevation: 7,
-    child: Container(
-      padding: EdgeInsets.all(10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Submitter: ${submittedDev!}",
-            style: TextStyle(
-                fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(ticketDesc!,
-              overflow: TextOverflow.fade,
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-              )),
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: [
-              Text("Assigned To: $submittedDev",
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold)),
-              Spacer(),
-              Icon(
-                Icons.label_important,
-                color: priorityColorGetter(),
-              )
-            ],
-          )
-        ],
-      ),
-    ),
-  );
 }
